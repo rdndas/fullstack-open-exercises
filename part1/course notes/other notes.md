@@ -1,39 +1,6 @@
-### Notes
-
-React Library and JavaScript
-
-#### JavaScript Functions:
- - Functions can be defined using `function()` declaration or arrow function expression syntax
-    -  name, parameter and statements within a function expression is optional
-    - if name is omitted the function becomes anonymous and local to the function bdody 
-    ``` javascript
-    const getRectArea = function(width, height) { return width*height;};
-    console.log(getRectArea(3,4));
-    //Expected output: 12
-    ```
-    - function expressions are not hoisted unlike function declaration (You cannot use the function before you create them)
-    - Named Function
-    ```javascript
-    const math = {
-        factorial: function factorial(n) {
-            console.log(n);
-            if(n<=1) { 
-                return 1;
-            }
-            return n* factorial(n-1);
-        },
-    };
-
-    math.factorial(3); //3;2;1
-    ```
-#### JSX
-- layout of react components is mostly written using JSX
-- JSX is XML like, every tag needs to be closed (for example <br />)
-
-#### props: passing data to components
-- 
-
 #### Other Notes:
+
+
 
 ##### React
 

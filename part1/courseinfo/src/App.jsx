@@ -8,7 +8,7 @@ const App = () => {
   const exercises3 = 14
 
   return(
-    <>
+    <> 
       <Header course={course} />
       <Content
         part1={part1}
@@ -23,14 +23,15 @@ const App = () => {
     </>
   )
 }
-
-const Total = ({exercises1, exercises2, exercises3}) => {
+// The components can be a normal function too 
+// instead of arrow function expression
+function Total ({exercises1, exercises2, exercises3}) {
 
  const total = exercises1 + exercises2 + exercises3 
   return (
-    <div>
+    <>
       <p>Number of exercises {total}</p>
-    </div>
+    </>
   )
 }
 
@@ -46,7 +47,7 @@ const Header = ({course}) => {
 const Content = ({part1, part2, part3, exercises1, exercises2, exercises3}) => {
 
   return(
-    <div>
+    <>
       <p>
         {part1} {exercises1}
       </p>
@@ -56,7 +57,7 @@ const Content = ({part1, part2, part3, exercises1, exercises2, exercises3}) => {
       <p>
         {part3} {exercises3}
       </p>
-    </div>
+    </>
   )
 }
 

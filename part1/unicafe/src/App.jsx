@@ -2,6 +2,37 @@ import { useState } from "react";
 
 const Button = ({ onClick, text }) => <button onClick={onClick}>{text}</button>;
 
+const StatisticsLine = (props) => {
+  return (
+    <div>
+      <p>
+        {props.text} {props.value}
+      </p>
+    </div>
+  );
+};
+
+const Statistics = ({ good, bad, neutral, all, avg, posPer }) => {
+  if (all === 0) {
+    return (
+      <>
+        <p>No feedback given</p>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <StatisticsLine text="good" value={good} />
+      <StatisticsLine text="neutral" value={neutral} />
+      <StatisticsLine text="bad" value={bad} />
+      <StatisticsLine text="all" value={all} />
+      <StatisticsLine text="avg" value={avg} />
+      <StatisticsLine text="positive" value={posPer + "%"} />
+    </>
+  );
+};
+
 const App = () => {
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
@@ -11,9 +42,9 @@ const App = () => {
   const [posPer, setPosPer] = useState(0);
 
   const calcTotal = (good, bad, neutral) => good + bad + neutral;
-  const calcAverage = (value, total) => value/total;
+  const calcAverage = (value, total) => value / total;
   const calcValue = (good, bad, neutral) => good * 1 + bad * -1 + neutral * 0;
-  const positivePerc = (good, total) => (good/total)*100
+  const positivePerc = (good, total) => (good / total) * 100;
 
   const setGoodFeedback = () => {
     const newGood = good + 1;
@@ -21,12 +52,12 @@ const App = () => {
     const total = calcTotal(newGood, bad, neutral);
     setAll(total);
     const value = calcValue(newGood, bad, neutral);
-    console.log("good value: ", value);
+
     const average = calcAverage(value, total);
-    console.log("good ", average);
+
     setAvg(average);
-    const positivePercentage = positivePerc(newGood, total)
-    setPosPer(positivePercentage)
+    const positivePercentage = positivePerc(newGood, total);
+    setPosPer(positivePercentage);
   };
 
   const setNeutralFeedback = () => {
@@ -34,14 +65,13 @@ const App = () => {
     setNeutral(newNeutral);
     const total = calcTotal(good, bad, newNeutral);
     setAll(total);
-    const neutralAverage = calcAverage(newNeutral, total);
+
     const value = calcValue(good, bad, newNeutral);
-    console.log("neutral value: ", value);
     const average = calcAverage(value, total);
-    console.log("neutral", average);
+
     setAvg(average);
-    const positivePercentage = positivePerc(good, total)
-    setPosPer(positivePercentage)
+    const positivePercentage = positivePerc(good, total);
+    setPosPer(positivePercentage);
   };
 
   const setBadFeedback = () => {
@@ -49,14 +79,13 @@ const App = () => {
     setBad(newBad);
     const total = calcTotal(good, newBad, neutral);
     setAll(total);
-    const badAverage = calcAverage(newBad, total);
+
     const value = calcValue(good, newBad, neutral);
-    console.log("bad value: ", value);
     const average = calcAverage(value, total);
-    console.log("bad ", average);
+
     setAvg(average);
-    const positivePercentage = positivePerc(good, total)
-    setPosPer(positivePercentage)
+    const positivePercentage = positivePerc(good, total);
+    setPosPer(positivePercentage);
   };
 
   return (
@@ -67,13 +96,16 @@ const App = () => {
         <Button onClick={setNeutralFeedback} text="neutral"></Button>
         <Button onClick={setBadFeedback} text="bad"></Button>
       </div>
+      <h1>statistcs</h1>
       <div>
-        <p>good {good}</p>
-        <p>neutral {neutral}</p>
-        <p>bad {bad}</p>
-        <p>all {all}</p>
-        <p>avg {avg}</p>
-        <p>positive% {posPer} %</p>
+        <Statistics
+          good={good}
+          neutral={neutral}
+          bad={bad}
+          all={all}
+          avg={avg}
+          posPer={posPer}
+        />
       </div>
     </div>
   );

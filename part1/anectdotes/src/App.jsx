@@ -14,6 +14,7 @@ const App = () => {
   ];
 
   const [selected, setSelected] = useState(0);
+  const [votes, setVotes] = useState({ 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0 });
 
   const getNextAnecdote = () => {
     let max = anecdotes.length;
@@ -21,10 +22,18 @@ const App = () => {
     setSelected(randomInt);
   };
 
+  const addVotes = () => {
+    const newVotes = { ...votes };
+    newVotes[selected] += 1
+    setVotes(newVotes)
+  };
+
   return (
     <div>
-      {anecdotes[selected]}
+      <p>{anecdotes[selected]}</p>
+      <p>{votes[selected]}</p>
       <div>
+        <Button onClick={addVotes} text="vote"></Button>
         <Button onClick={getNextAnecdote} text="next anecdote"></Button>
       </div>
     </div>

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import Person from "./components/Person";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import personService from "./services/persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,6 +11,8 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newFilterValue, setNewFilter] = useState("");
+  const [message, setMessage] = useState(null);
+  const [msgType, setMsgType] = useState(null);
 
   useEffect(() => {
     personService.getObj("http://localhost:3001/persons").then((persons) => {
@@ -26,8 +28,6 @@ const App = () => {
     event.preventDefault();
     const index = persons.findIndex((person) => person.name === newName);
 
-    console.log(`index is ${index}`)
-
     if (index === -1) {
       const newPerson = {
         name: newName,
@@ -39,22 +39,51 @@ const App = () => {
         setNewName("");
         setNewNumber("");
       });
+      setMessage(`Added ${newName}`);
+      setMsgType("notify");
+
+      setTimeout(() => {
+        setMessage(null);
+        setMsgType(null);
+      }, 5000);
 
       return;
     } else {
-      const thatPersonObj = persons.find((n) => n.name=== newName)
-      const changedPersonObj = {...thatPersonObj, number: newNumber }
-      const id = thatPersonObj.id
-      console.log('update Person: ',thatPersonObj)
-      console.table('changed person: ',changedPersonObj)
-      if (window.confirm(`${newName} is already in the phonebook. Do you want to update the number to ${newNumber}?`)){
-        personService.updateObj(id, changedPersonObj).then((newPerson) => {
-        setPersons(persons.map((person) => (person.name === newName ? changedPersonObj : person)))
-      })
-      }   
+      const thatPersonObj = persons.find((n) => n.name === newName);
+      const changedPersonObj = { ...thatPersonObj, number: newNumber };
+      const id = thatPersonObj.id;
+
+      if (
+        window.confirm(
+          `${newName} is already in the phonebook. Do you want to update the number to ${newNumber}?`
+        )
+      ) {
+        personService
+          .updateObj(id, changedPersonObj)
+          .then((newPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.name === newName ? changedPersonObj : person
+              )
+            );
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 404) {
+              setMessage(
+                `Information of ${newName} has already been removed from the server`
+              );
+              setMsgType("error");
+              setPersons(persons.filter((p) => p.id !== id));
+              setTimeout(() => {
+                setMessage(null);
+                setMsgType(null);
+              }, 5000);
+            }
+          });
+      }
     }
     setNewName("");
-    setNewNumber("")
+    setNewNumber("");
   };
 
   const handleNumberchange = (event) => {
@@ -105,7 +134,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-
+      <Notification clsName={msgType} message={message} />
       <Filter value={newFilterValue} onChange={handleFilterValue} />
       <h2>add a new </h2>
       <PersonForm

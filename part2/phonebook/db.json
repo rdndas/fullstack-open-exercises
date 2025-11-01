@@ -1,41 +1,6 @@
 {
   "persons": [
     {
-      "name": "Arto Hellas",
-      "number": "49040404040",
-      "id": "1"
-    },
-    {
-      "name": "Ada Lovelace",
-      "number": "39-44-5323523",
-      "id": "2"
-    },
-    {
-      "name": "Dan Abramov",
-      "number": "12-43-234345",
-      "id": "3"
-    },
-    {
-      "name": "Mary Poppendieck",
-      "number": "39-23-6423122",
-      "id": "4"
-    },
-    {
-      "id": "89cf",
-      "name": "teet",
-      "number": "eee"
-    },
-    {
-      "id": "52fc",
-      "name": "test",
-      "number": "sdfsf"
-    },
-    {
-      "id": "ba0b",
-      "name": "tsesstst",
-      "number": "2324"
-    },
-    {
       "id": "1b92",
       "name": "rerwrew",
       "number": "2324"
@@ -73,6 +38,26 @@
     {
       "id": "d9e1",
       "name": "test sdfsf",
+      "number": "30303"
+    },
+    {
+      "id": "2d69",
+      "name": "test name",
+      "number": "203030"
+    },
+    {
+      "id": "3c11",
+      "name": "test new name",
+      "number": "4042034034030"
+    },
+    {
+      "id": "6434",
+      "name": "new test name",
+      "number": "030302"
+    },
+    {
+      "id": "01f5",
+      "name": "teet eee",
       "number": "303030"
     }
   ]

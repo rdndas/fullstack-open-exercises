@@ -1,5 +1,8 @@
 const express = require("express");
+var morgan = require("morgan");
 const app = express();
+
+app.use(express.json())
 
 let persons = [
   {
@@ -24,7 +27,34 @@ let persons = [
   },
 ];
 
-app.use(express.json());
+morgan.token('body', (req, res) => {
+  // Only log if the request body exists (e.g., for POST requests)
+  return req.body ? JSON.stringify(req.body) : 'No Body';
+});
+
+const skipNonPost = (req, res) => {
+  return req.method !== 'POST'; // Returns true (skip) if method is NOT POST
+};
+
+// app.use(
+//   morgan(function (tokens, req, res) {
+//     return [
+//       tokens.method(req, res),
+//       tokens.url(req, res),
+//       tokens.status(req, res),
+//       "-",
+//       tokens["response-time"](req, res),
+//       "ms",
+//       "-",
+//       tokens["body"](req, res),
+//     ].join(" ");
+//   }, skip: skipNonPost)
+// );
+
+app.use(morgan(':method :url :status - :response-time ms :body', {
+  skip: skipNonPost
+}));
+
 
 app.get("/api/persons", (request, response) => {
   response.json(persons);
@@ -52,93 +82,93 @@ app.get("/api/person/:id", (request, response) => {
   }
 });
 
-app.delete('/api/person/:id', (request,response) => {
-    const id = request.params.id;
+app.delete("/api/person/:id", (request, response) => {
+  const id = request.params.id;
 
-    persons = persons.filter(person => person.id !== id)
-    
-    response.status(204).end();
+  persons = persons.filter((person) => person.id !== id);
+
+  response.status(204).end();
 });
 
-const generateId = () =>{
-   const minId = 1;
-   const maxId = 9;
-   const maxAttempts = 100;
-   const existingIds = new Set(persons.map(p => Number(p.id)));
+const generateId = () => {
+  const minId = 1;
+  const maxId = 9;
+  const maxAttempts = 100;
+  const existingIds = new Set(persons.map((p) => Number(p.id)));
 
-   let attempts = 1;
-   let newId;
+  let attempts = 1;
+  let newId;
 
-   while (attempts < maxAttempts) {
-        
-        newId = Math.floor(Math.random() * (maxId - minId + 1) + minId);
+  while (attempts < maxAttempts) {
+    newId = Math.floor(Math.random() * (maxId - minId + 1) + minId);
 
-        // Check for uniqueness
-        if (!existingIds.has(newId)) {
-            // Found a unique ID
-            return newId; 
-        }
-        attempts++;
-        console.log(`Conflict on ID ${newId}. Attempt: ${attempts}`);
+    // Check for uniqueness
+    if (!existingIds.has(newId)) {
+      // Found a unique ID
+      return newId;
     }
-    throw new Error('Failed to generate a unique ID. ID pool may be exhausted.');
-}
+    attempts++;
+    console.log(`Conflict on ID ${newId}. Attempt: ${attempts}`);
+  }
+  throw new Error("Failed to generate a unique ID. ID pool may be exhausted.");
+};
 
-app.post('/api/persons', (request, response) => {
-    const body = request.body
+app.post("/api/persons", (request, response) => {
+  const body = request.body;
 
-    if (!body.name) {
-        return response.status(400).json({ 
-            error: 'Name is missing. Please provide a name.' 
-        });
-    }
-
-    if (!body.number) {
-        return response.status(400).json({ 
-            error: 'Number is missing. Please provide a phone number.' 
-        });
-    }
-
-    const duplicatePerson = persons.find(
-    person => person.name.toLowerCase() === body.name.toLowerCase()
-);
-
-if (duplicatePerson) {
-    return response.status(400).json({ 
-        error: `Name must be unique. Name "${body.name}" already exists in the phonebook.`
+  if (!body.name) {
+    return response.status(400).json({
+      error: "Name is missing. Please provide a name.",
     });
-}
+  }
 
-    const person = {
-        name: body.name,
-        number: body.number,
-        id: generateId()
-    }
+  if (!body.number) {
+    return response.status(400).json({
+      error: "Number is missing. Please provide a phone number.",
+    });
+  }
 
-    persons = persons.concat(person);
-    console.log(person.id)
-    response.json(person)
-})
+  const duplicatePerson = persons.find(
+    (person) => person.name.toLowerCase() === body.name.toLowerCase()
+  );
 
+  if (duplicatePerson) {
+    return response.status(400).json({
+      error: `Name must be unique. Name "${body.name}" already exists in the phonebook.`,
+    });
+  }
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: generateId(),
+  };
+
+  persons = persons.concat(person);
+  console.log(person.id);
+  response.json(person);
+});
 
 app.use((err, req, res, next) => {
-    console.error("Caught an error in middleware:", err.message);
+  console.error("Caught an error in middleware:", err.message);
 
-    if (err.message.includes('Failed to generate a unique ID')) {
-        return res.status(500).json({ 
-            error: err.message,
-        });
-    }
-
-    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-        // Send a custom, clear error response
-        res.statusMessage = 'Invalid JSON'
-        return res.status(400).send({ message: 'Invalid JSON format in request body' });
-    }
-
-    res.status(500).json({
-        error: 'An unexpected server error occurred.'
+  if (err.message.includes("Failed to generate a unique ID")) {
+    return res.status(500).json({
+      error: err.message,
     });
+  }
+
+  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+    // Send a custom, clear error response
+    res.statusMessage = "Invalid JSON";
+    return res
+      .status(400)
+      .send({ message: "Invalid JSON format in request body" });
+  }
+
+  res.status(500).json({
+    error: "An unexpected server error occurred.",
+  });
 });
 
 const PORT = 3001;

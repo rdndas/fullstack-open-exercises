@@ -15,7 +15,7 @@ const App = () => {
   const [msgType, setMsgType] = useState(null);
 
   useEffect(() => {
-    personService.getObj().then((persons) => {
+    personService.getObj("").then((persons) => {
       setPersons(persons);
     });
   }, []);
